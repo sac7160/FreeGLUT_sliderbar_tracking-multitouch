@@ -1,0 +1,4 @@
+﻿  new_glut.cpp
+new_glut.obj : error LNK2001: 확인할 수 없는 외부 기호 _glewGetErrorString@4
+new_glut.obj : error LNK2001: 확인할 수 없는 외부 기호 _glewInit@0
+C:\Users\JYPlab\Desktop\박창현\new_glut\Release\new_glut.exe : fatal error LNK1120: 2개의 확인할 수 없는 외부 참조입니다.
