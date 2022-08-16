@@ -11,10 +11,10 @@ will be continuously updated.
 The main function is divided into three parts.   
 1. implementing **slider bar**   
 2. **tracking two-points-touch input**  and print the coordinates in console window.   
-3. sending the content by using **Serial communication** when mouse pressed or a touch event occurs.       
-
-
-
+3. sending the content by using **Serial communication** when mouse pressed or a touch event occurs.        
+   
+   
+아직 불필요한 코드,오류 많음..
 
 ***   
 
