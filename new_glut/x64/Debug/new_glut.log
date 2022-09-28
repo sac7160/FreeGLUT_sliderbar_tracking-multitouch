@@ -1,2 +1,4 @@
 ﻿  new_glut.cpp
-LINK : fatal error LNK1104: 'freeglutd.lib' 파일을 열 수 없습니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(14,10): fatal error C1083: 포함 파일을 열 수 없습니다. 'HL/hl.h': No such file or directory
+  Serial.cpp
+  코드를 생성하고 있습니다...

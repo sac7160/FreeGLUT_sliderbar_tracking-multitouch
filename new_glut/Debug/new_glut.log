@@ -1,18 +1,21 @@
 ﻿  new_glut.cpp
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(76,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(77,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(78,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(79,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(87,28): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(109,47): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(114,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(116,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(119,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(122,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(142,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(143,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(144,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(145,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(201,72): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(201,52): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(88,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(89,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(90,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(91,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(98,42): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(106,44): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(116,47): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(119,17): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(123,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(124,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(125,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(126,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(168,28): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(170,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(171,31): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(172,31): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(173,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(199,72): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\박창현\new_glut\new_glut.cpp(199,52): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   new_glut.vcxproj -> C:\Users\JYPlab\Desktop\박창현\new_glut\Debug\new_glut.exe
