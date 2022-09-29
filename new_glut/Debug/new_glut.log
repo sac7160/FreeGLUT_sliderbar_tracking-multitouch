@@ -1,27 +1,25 @@
 ﻿  new_glut.cpp
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(88,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(89,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(90,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(91,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(98,42): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(106,44): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(116,47): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(119,17): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(123,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(124,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(125,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(126,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(168,28): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(170,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(171,31): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(172,31): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(173,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(199,72): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(199,52): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  Serial.cpp
-  코드를 생성하고 있습니다...
-LINK : warning LNK4098: 'LIBCMT' defaultlib가 다른 라이브러리와 충돌합니다. /NODEFAULTLIB:library를 사용하십시오.
-glew32s.lib(glew.obj) : warning LNK4099: 'vc120.pdb' PDB를 'glew32s.lib(glew.obj)' 또는 'C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\Debug\vc120.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
-hdu.lib(hduAfx.obj) : warning LNK4099: 'HDU.pdb' PDB를 'hdu.lib(hduAfx.obj)' 또는 'C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\Debug\HDU.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
-hdu.lib(hduError.obj) : warning LNK4099: 'HDU.pdb' PDB를 'hdu.lib(hduError.obj)' 또는 'C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\Debug\HDU.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(69,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(70,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(71,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(72,29): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(79,42): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(87,44): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(97,47): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(100,17): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(104,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(105,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(106,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(107,30): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(123,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(124,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(125,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(126,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(129,28): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(131,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(132,31): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(133,31): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(134,30): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(160,72): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\new_glut.cpp(160,52): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   new_glut.vcxproj -> C:\Users\JYPlab\Desktop\git\FreeGLUT_sliderbar_tracking-multitouch\new_glut\Debug\new_glut.exe

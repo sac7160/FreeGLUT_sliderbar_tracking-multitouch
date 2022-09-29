@@ -8,47 +8,28 @@
 
 #include "SerialClass.h"
 
-////////////////////////////////
-//OpenHaptics
-
+#include <HD/hd.h>
 #include <HL/hl.h>
 #include <HDU/hduError.h>
+#include <HDU/hduVector.h>
 
-HLuint gMyShapeId;
-HHLRC hHLRC;
-HHD hHD;
+# include <conio.h>
+HLuint gEffect;
+HDCallbackCode HLCALLBACK PantomCallback();
 
-void exitHandler()
+HDCallbackCode HDCALLBACK PhantomCallback()
 {
-    // Deallocate the sphere shape id we reserved in initHL.
-    hlDeleteShapes(gMyShapeId, 1);
+    hlBeginFrame();
+    hlEffectd(HL_EFFECT_PROPERTY_DURATION, 100);
+    hlEffectdv(HL_EFFECT_PROPERTY_DIRECTION, hduVector3Dd(0, 0, 1));
 
-    // Free up the haptic rendering context.
-    hlMakeCurrent(NULL);
-    if (hHLRC != NULL)
-    {
-        hlDeleteContext(hHLRC);
-    }
+    hlStartEffect(HL_EFFECT_CONSTANT, gEffect);
 
-    // Free up the haptic device.
-    if (hHD != HD_INVALID_HANDLE)
-    {
-        hdDisableDevice(hHD);
-    }
+    hlEndFrame();
+
+    return HD_CALLBACK_CONTINUE;
 }
 
-void glutMenu(int ID)
-{
-    switch (ID) {
-    case 0:
-        exit(0);
-        break;
-    }
-}
-
-
-
-////////////////////////////////
 using namespace std;
 
 Serial* SP = new Serial("\\\\.\\COM3");    
@@ -134,37 +115,17 @@ Square* sqr = new Square;
 GLint TopLeftX, TopLeftY, BottomRightX, BottomRightY;
 void onDisplay(void) {
 
-    hlBeginFrame(); //start haptic frame
     
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //depthbufferbit 추가
+    glClear(GL_COLOR_BUFFER_BIT); 
 
     glColor3f(0.0, 0.0, 0.0);
-      // Start the haptic shape.
-    hlBeginShape(HL_SHAPE_DEPTH_BUFFER, gMyShapeId);
-    glBegin(GL_POLYGON);
-    glVertex3f(0.25, 0.25, 0.0);
-    glVertex3f(0.75, 0.25, 0.0);
-    glVertex3f(0.75, 0.75, 0.0);
-    glVertex3f(0.25, 0.75, 0.0);
-    glEnd();
-
-    // End the haptic shape.
-    hlEndShape();
-
-    // End the haptic frame.
-    hlEndFrame();
-
-
-    /*glColor3f(0.0, 0.0, 0.0);
     glBegin(GL_POLYGON);
     glVertex3f(0.2, 0.47, 0.0);
     glVertex3f(0.8, 0.47, 0.0);
     glVertex3f(0.8, 0.53, 0.0);
     glVertex3f(0.2, 0.53, 0.0);
     glEnd();
-    */
     
-
     glColor3f(0	,0.74902	,1);
     glBegin(GL_POLYGON);
     glVertex3f(0.2, 0.47, 0.0);
@@ -212,51 +173,178 @@ void onMultiMotion(int cursor_id, int x, int y) {
     }
 }
 
-void Initialize() {
-    glClearColor(1.0, 1.0, 1.0, 1.0);
-    glMatrixMode(GL_PROJECTION);
-    /*glLoadIdentity();
-    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);*/
+/// <summary>
+/// ///////////////////////////////////////////////////////////
+/// </summary>
+
+HHD ghHD = HD_INVALID_HANDLE;
+
+//handle to haptic rendering context
+HHLRC ghHLRC;
+
+//effect ID
 
 
-    //OpenHaptics init
+//effect properties
+float gGain = .2f;
+float gMagnitude = .5f;
+HLenum newEffectType;   //필요하나? 
 
-    
-    hlLoadIdentity();
-    hlOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 
-    glDepthFunc(GL_LEQUAL);
-    glEnable(GL_DEPTH_TEST);
-
+/******************************************************************************
+ Initializes haptics.
+******************************************************************************/
+void initHL(void)
+{
     HDErrorInfo error;
-    hHD = hdInitDevice(HD_DEFAULT_DEVICE);
 
+    ghHD = hdInitDevice(HD_DEFAULT_DEVICE);
     if (HD_DEVICE_ERROR(error = hdGetError()))
     {
         hduPrintError(stderr, &error, "Failed to initialize haptic device");
-        fprintf(stderr, "Press any key to exit");
+        fprintf(stderr, "\nPress any key to quit.\n");
         getchar();
         exit(-1);
     }
 
-    if (HD_SUCCESS != hdGetError().errorCode)
+    // Create a haptic context for the device.  The haptic context maintains 
+    // the state that persists between frame intervals and is used for
+    // haptic rendering.
+    ghHLRC = hlCreateContext(ghHD);
+    hlMakeCurrent(ghHLRC);
+
+    hlDisable(HL_USE_GL_MODELVIEW);
+
+    gEffect = hlGenEffects(1);
+
+}
+
+
+/******************************************************************************
+ Updates the effect with new properties.
+******************************************************************************/
+void updateEffect(HLenum newEffectType)
+{
+    // Update the gain and magnitude of the current effect.
+    // The effect must be active.  
+    // Note that not all effects will use all of these 
+    // properties.
+    hlBeginFrame();
+    HLboolean bActive = false;
+    hlGetEffectbv(gEffect, HL_EFFECT_PROPERTY_ACTIVE, &bActive);
+    if (bActive)
     {
-        fprintf(stderr, "Erorr initializing haptic device.\nPress any key to exit");
-        getchar();
-        exit(-1);
+        hlEffectd(HL_EFFECT_PROPERTY_GAIN, gGain);
+        hlEffectd(HL_EFFECT_PROPERTY_MAGNITUDE, gMagnitude);
+        hlUpdateEffect(gEffect);
+        // To get the effect type, use the appropriate effect 
+        // query to get the integer representation of the effect,
+        // then cast that as an HLenum to get the string name.
+        printf("Effect properties for ");
+        HLint nType;
+        hlGetEffectiv(gEffect, HL_EFFECT_PROPERTY_TYPE, &nType);
+        printf("%s\n", newEffectType);
+    }
+    else
+    {
+        printf("No effect active\n");
+    }
+    printf("  Magnitude: %.1f\n", gMagnitude);
+    printf("  Gain: %.1f\n", gGain);
+    printf("\n");
+    hlEndFrame();
+}
+
+/******************************************************************************
+ Stops the effect.
+******************************************************************************/
+void stopEffect()
+{
+    hlBeginFrame();
+    // Only necessary to stop the effect if it's active (i.e. on).
+    HLboolean bActive = false;
+    hlGetEffectbv(gEffect, HL_EFFECT_PROPERTY_ACTIVE, &bActive);
+    if (bActive)
+    {
+        hlStopEffect(gEffect);
+    }
+    hlEndFrame();
+
+}
+
+/******************************************************************************
+ Starts an effect type.
+******************************************************************************/
+void startEffectType(HLenum newEffectType)
+{
+    // First stop the current effect.
+    stopEffect();
+
+    // Start the new effect, set whatever appropriate unique 
+    // properties are necessary for each effect type.
+    hlBeginFrame();
+    if (newEffectType == HL_EFFECT_SPRING)
+    {
+        hduVector3Dd position;
+        hlGetDoublev(HL_DEVICE_POSITION, position);
+        hlEffectdv(HL_EFFECT_PROPERTY_POSITION, position);
+    }
+    else if (newEffectType == HL_EFFECT_CONSTANT)
+    {
+        hlEffectd(HL_EFFECT_PROPERTY_DURATION, 100);
+        hlEffectdv(HL_EFFECT_PROPERTY_DIRECTION, hduVector3Dd(0, 0, 1));
     }
 
-    hHLRC = hlCreateContext(hHD);
-    hlMakeCurrent(hHLRC);
+    hlStartEffect(newEffectType, gEffect);
 
-    gMyShapeId = hlGenShapes(1);
-    hlWorkspace(-80, -80, -70, 80, 80, 20);
+    hlEndFrame();
 
-    hlMatrixMode(HL_TOUCHWORKSPACE);
-    hlLoadIdentity();
-    hlOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+    updateEffect(newEffectType);
+}
 
-   
+/******************************************************************************
+ Prints help.
+******************************************************************************/
+void printHelp()
+{
+    static const char help[] = { "\
+-----------------------------------------------\n\
+      Effect Attributes Example Menu Options\n\
+===============================================\n\
+Effect Types;\n\
+[F] : Switch to friction effect\n\
+[S] : Switch to spring effect\n\
+[C] : Switch to constant effect\n\
+[V] : Switch to viscous effect\n\
+[N] : Switch to no effect\n\
+\n\
+Effect Properties:\n\
+[-] : Decrease effect magnitude\n\
+[+] : Increase effect magnitude\n\
+[[] : Decrease effect gain\n\
+[]] : Increase effect gain\n\
+\n\
+Miscellaneous:\n\
+[H] : Print help menu\n\
+[Q] : Quit\n\
+\n\
+(note: Setting gain/magnitude at high values may cause\n\
+instability in some force effects and devices.)\n" };
+
+    printf("%s\n\n", help);
+
+}
+
+
+
+void Initialize() {
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+    //openHaptics initialize
+    initHL();
 }
 
 void MyMouseClick(GLint Button, GLint State, GLint X, GLint Y) {
@@ -293,16 +381,115 @@ int main(int argc, char* argv[]) {
 
 
     /////////////////
-    glutCreateMenu(glutMenu);
-    glutAddMenuEntry("Quit", 0);
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
-    atexit(exitHandler);
+
+   // glutAddMenuEntry("Quit", 0);
+   // glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+  
+   
     ////////////////
     Initialize();
     glutDisplayFunc(onDisplay);
     glutMouseFunc(MyMouseClick);
     glutMultiMotionFunc(onMultiMotion);
 
+    printHelp();
+
+    // Loop until the user quits or an error occurs.
+   /* bool bDone = false;
+    while (!bDone)
+    {
+        if (_kbhit())
+        {
+            int key = toupper(_getch());
+            bool bNeedsUpdate = false;
+
+            switch (key)
+            {
+            case 'F':
+                newEffectType = HL_EFFECT_FRICTION;
+                startEffectType(newEffectType);
+                break;
+            case 'S':
+                newEffectType = HL_EFFECT_SPRING;
+                startEffectType(newEffectType);
+                break;
+            case 'C':
+                newEffectType = HL_EFFECT_CONSTANT;
+                startEffectType(newEffectType);
+                break;
+            case 'V':
+                newEffectType = HL_EFFECT_VISCOUS;
+                startEffectType(newEffectType);
+                break;
+            case 'N':
+                stopEffect();
+                break;
+
+            case ']':
+                gGain += 0.1f;
+                if (gGain > 1.0f)
+                    gGain = 1.0f;
+                bNeedsUpdate = true;
+                break;
+            case '[':
+                gGain -= 0.1f;
+                if (gGain < 0.0f)
+                    gGain = 0.0f;
+                bNeedsUpdate = true;
+                break;
+            case '+':
+            case '=':
+                gMagnitude += 0.1f;
+                if (gMagnitude > 1.0f)
+                    gMagnitude = 1.0f;
+                bNeedsUpdate = true;
+                break;
+            case '-':
+            case '_':
+                gMagnitude -= 0.1f;
+                if (gMagnitude < 0.0f)
+                    gMagnitude = 0.0f;
+                bNeedsUpdate = true;
+                break;
+
+            case 'Q':
+                bDone = true;
+                break;
+            case 'H':
+            default:
+                printHelp();
+                break;
+            }
+
+            if (bNeedsUpdate)
+            {
+                updateEffect(newEffectType);
+            }
+
+            // Check for any errors.
+            HLerror error;
+            while (HL_ERROR(error = hlGetError()))
+            {
+                fprintf(stderr, "HL Error: %s\n", error.errorCode);
+
+                if (error.errorCode == HL_DEVICE_ERROR)
+                {
+                    hduPrintError(stderr, &error.errorInfo,
+                        "Error during haptic rendering\n");
+                }
+            }
+        }
+    }
+    */
+    // Release the effect id.
+    hlDeleteEffects(gEffect, 1);
+    
+    // Cleanup.
+    hlMakeCurrent(NULL);
+    hlDeleteContext(ghHLRC);
+    hdDisableDevice(ghHD);
+    
     glutMainLoop();
 
     return EXIT_SUCCESS;
