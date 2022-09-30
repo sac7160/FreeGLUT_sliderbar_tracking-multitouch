@@ -22,6 +22,17 @@ static HDSchedulerHandle hUpdateDeviceCallback = HD_INVALID_HANDLE;
 
 static HDboolean isActive = HD_FALSE;
 
+/* Handle to haptic rendering context. */
+HHLRC ghHLRC;
+
+//effect id
+HLuint gEffect;
+
+/* Effect properties */
+float gGain = .2f;
+float gMagnitude = .5f;
+
+
 /*******************************************************************************
  This is the main haptic rendering callback.  This callback will render an
  anchored spring force when the user presses the button.
@@ -33,7 +44,81 @@ HDCallbackCode HDCALLBACK mainCallback(void* pUserData)
     HDErrorInfo error;
     hduVector3Dd force = { 0, 0, 0 };
 
-    hdBeginFrame(ghHD);
+    //hdBeginFrame(ghHD);
+
+    hdGetIntegerv(HD_CURRENT_BUTTONS, &currentButtons);
+    hdGetIntegerv(HD_LAST_BUTTONS, &lastButtons);
+    
+    /* Detect button state transitions. */
+    if ((currentButtons & HD_DEVICE_BUTTON_1) != 0 &&
+        (lastButtons & HD_DEVICE_BUTTON_1) == 0)
+    {
+        isActive = HD_TRUE;
+        //hdGetDoublev(HD_CURRENT_POSITION, gAnchorPosition); position확인 주석처리
+    }
+    else if ((currentButtons & HD_DEVICE_BUTTON_1) == 0 &&
+        (lastButtons & HD_DEVICE_BUTTON_1) != 0)
+    {
+        isActive = HD_FALSE;
+    }
+
+    if (isActive)   //haptic effect
+    {
+        std::cout << "isActive" << '\n';
+        // Start the new effect, set whatever appropriate unique 
+        // properties are necessary for each effect type.
+        hlBeginFrame();
+        
+        hlStartEffect(HL_EFFECT_FRICTION, gEffect);
+
+        hlEndFrame();
+
+    }
+
+    hdSetDoublev(HD_CURRENT_FORCE, force);
+
+    //hdEndFrame(ghHD);
+
+    if (HD_DEVICE_ERROR(error = hdGetError()))
+    {
+        if (hduIsForceError(&error))
+        {
+            /* Disable the anchor following the force error. */
+            isActive = HD_FALSE;
+        }
+        else
+        {
+            /* This is likely a more serious error, so bail. */
+            hduPrintError(stderr, &error, "Error during haptic rendering");
+            exit(-1);
+        }
+    }
+
+    return HD_CALLBACK_CONTINUE;
+}
+
+void stopEffect()
+{
+    hlBeginFrame();
+    // Only necessary to stop the effect if it's active (i.e. on).
+    HLboolean bActive = false;
+    hlGetEffectbv(gEffect, HL_EFFECT_PROPERTY_ACTIVE, &bActive);
+    if (bActive)
+    {
+        hlStopEffect(gEffect);
+    }
+    hlEndFrame();
+
+}
+
+HDCallbackCode HDCALLBACK mainCallback2(void* pUserData)
+{
+    int currentButtons, lastButtons;
+
+    HDErrorInfo error;
+    hduVector3Dd force = { 0, 0, 0 };
+
+    hlBeginFrame();
 
     hdGetIntegerv(HD_CURRENT_BUTTONS, &currentButtons);
     hdGetIntegerv(HD_LAST_BUTTONS, &lastButtons);
@@ -54,26 +139,17 @@ HDCallbackCode HDCALLBACK mainCallback(void* pUserData)
     if (isActive)   //haptic effect
     {
         std::cout << "isActive" << '\n';
+        // Start the new effect, set whatever appropriate unique 
+        // properties are necessary for each effect type.
+      
+        stopEffect();
+        hlStartEffect(HL_EFFECT_FRICTION, gEffect);
+       
     }
 
     hdSetDoublev(HD_CURRENT_FORCE, force);
 
-    hdEndFrame(ghHD);
-
-    if (HD_DEVICE_ERROR(error = hdGetError()))
-    {
-        if (hduIsForceError(&error))
-        {
-            /* Disable the anchor following the force error. */
-            isActive = HD_FALSE;
-        }
-        else
-        {
-            /* This is likely a more serious error, so bail. */
-            hduPrintError(stderr, &error, "Error during haptic rendering");
-            exit(-1);
-        }
-    }
+    hlEndFrame();
 
     return HD_CALLBACK_CONTINUE;
 }
@@ -99,6 +175,39 @@ void initHD()
         hduPrintError(stderr, &error, "Failed to start the scheduler");
         exit(-1);
     }
+
+}
+
+void initHL()
+{
+    HDErrorInfo error;
+
+    ghHD = hdInitDevice(HD_DEFAULT_DEVICE);
+    if (HD_DEVICE_ERROR(error = hdGetError()))
+    {
+        hduPrintError(stderr, &error, "Failed to initialize haptic device");
+        fprintf(stderr, "\nPress any key to quit.\n");
+        getchar();
+        exit(-1);
+    }
+    hUpdateDeviceCallback = hdScheduleAsynchronous(
+        mainCallback2, 0, HD_MAX_SCHEDULER_PRIORITY);
+
+    hdStartScheduler();
+    if (HD_DEVICE_ERROR(error = hdGetError()))
+    {
+        hduPrintError(stderr, &error, "Failed to start the scheduler");
+        exit(-1);
+    }
+
+    /*example  initHL중*/
+    ghHLRC = hlCreateContext(ghHD);
+    hlMakeCurrent(ghHLRC);
+
+    hlDisable(HL_USE_GL_MODELVIEW);
+
+    gEffect = hlGenEffects(1);
+    /*******************/
 
 }
 
@@ -262,7 +371,7 @@ void Initialize() {
     glLoadIdentity();
     glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 
-    initHD();
+    initHL();
 }
 
 void MyMouseClick(GLint Button, GLint State, GLint X, GLint Y) {
