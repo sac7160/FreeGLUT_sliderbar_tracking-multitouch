@@ -14,21 +14,101 @@
 #include <HDU/hduVector.h>
 
 # include <conio.h>
-HLuint gEffect;
-HDCallbackCode HLCALLBACK PantomCallback();
 
-HDCallbackCode HDCALLBACK PhantomCallback()
+/******************************************************************************
+*******************************************************************************/
+static HHD ghHD = HD_INVALID_HANDLE;
+static HDSchedulerHandle hUpdateDeviceCallback = HD_INVALID_HANDLE;
+
+static HDboolean isActive = HD_FALSE;
+
+/*******************************************************************************
+ This is the main haptic rendering callback.  This callback will render an
+ anchored spring force when the user presses the button.
+*******************************************************************************/
+HDCallbackCode HDCALLBACK mainCallback(void* pUserData)
 {
-    hlBeginFrame();
-    hlEffectd(HL_EFFECT_PROPERTY_DURATION, 100);
-    hlEffectdv(HL_EFFECT_PROPERTY_DIRECTION, hduVector3Dd(0, 0, 1));
+    int currentButtons, lastButtons;
 
-    hlStartEffect(HL_EFFECT_CONSTANT, gEffect);
+    HDErrorInfo error;
+    hduVector3Dd force = { 0, 0, 0 };
 
-    hlEndFrame();
+    hdBeginFrame(ghHD);
+
+    hdGetIntegerv(HD_CURRENT_BUTTONS, &currentButtons);
+    hdGetIntegerv(HD_LAST_BUTTONS, &lastButtons);
+
+    /* Detect button state transitions. */
+    if ((currentButtons & HD_DEVICE_BUTTON_1) != 0 &&
+        (lastButtons & HD_DEVICE_BUTTON_1) == 0)
+    {
+        isActive = HD_TRUE;
+        //hdGetDoublev(HD_CURRENT_POSITION, gAnchorPosition); position확인 주석처리
+    }
+    else if ((currentButtons & HD_DEVICE_BUTTON_1) == 0 &&
+        (lastButtons & HD_DEVICE_BUTTON_1) != 0)
+    {
+        isActive = HD_FALSE;
+    }
+
+    if (isActive)   //haptic effect
+    {
+        std::cout << "isActive" << '\n';
+    }
+
+    hdSetDoublev(HD_CURRENT_FORCE, force);
+
+    hdEndFrame(ghHD);
+
+    if (HD_DEVICE_ERROR(error = hdGetError()))
+    {
+        if (hduIsForceError(&error))
+        {
+            /* Disable the anchor following the force error. */
+            isActive = HD_FALSE;
+        }
+        else
+        {
+            /* This is likely a more serious error, so bail. */
+            hduPrintError(stderr, &error, "Error during haptic rendering");
+            exit(-1);
+        }
+    }
 
     return HD_CALLBACK_CONTINUE;
 }
+
+void initHD()
+{
+    HDErrorInfo error;
+    ghHD = hdInitDevice(HD_DEFAULT_DEVICE);
+    if (HD_DEVICE_ERROR(error = hdGetError()))
+    {
+        hduPrintError(stderr, &error, "Failed to initialize haptic device");
+        fprintf(stderr, "\nPress any key to quit.\n");
+        getchar();
+        exit(-1);
+    }
+
+    hUpdateDeviceCallback = hdScheduleAsynchronous(
+        mainCallback, 0, HD_MAX_SCHEDULER_PRIORITY);
+
+    hdStartScheduler();
+    if (HD_DEVICE_ERROR(error = hdGetError()))
+    {
+        hduPrintError(stderr, &error, "Failed to start the scheduler");
+        exit(-1);
+    }
+
+}
+
+
+
+
+
+/******************************************************************************
+*******************************************************************************/
+
 
 using namespace std;
 
@@ -173,167 +253,6 @@ void onMultiMotion(int cursor_id, int x, int y) {
     }
 }
 
-/// <summary>
-/// ///////////////////////////////////////////////////////////
-/// </summary>
-
-HHD ghHD = HD_INVALID_HANDLE;
-
-//handle to haptic rendering context
-HHLRC ghHLRC;
-
-//effect ID
-
-
-//effect properties
-float gGain = .2f;
-float gMagnitude = .5f;
-HLenum newEffectType;   //필요하나? 
-
-
-/******************************************************************************
- Initializes haptics.
-******************************************************************************/
-void initHL(void)
-{
-    HDErrorInfo error;
-
-    ghHD = hdInitDevice(HD_DEFAULT_DEVICE);
-    if (HD_DEVICE_ERROR(error = hdGetError()))
-    {
-        hduPrintError(stderr, &error, "Failed to initialize haptic device");
-        fprintf(stderr, "\nPress any key to quit.\n");
-        getchar();
-        exit(-1);
-    }
-
-    // Create a haptic context for the device.  The haptic context maintains 
-    // the state that persists between frame intervals and is used for
-    // haptic rendering.
-    ghHLRC = hlCreateContext(ghHD);
-    hlMakeCurrent(ghHLRC);
-
-    hlDisable(HL_USE_GL_MODELVIEW);
-
-    gEffect = hlGenEffects(1);
-
-}
-
-
-/******************************************************************************
- Updates the effect with new properties.
-******************************************************************************/
-void updateEffect(HLenum newEffectType)
-{
-    // Update the gain and magnitude of the current effect.
-    // The effect must be active.  
-    // Note that not all effects will use all of these 
-    // properties.
-    hlBeginFrame();
-    HLboolean bActive = false;
-    hlGetEffectbv(gEffect, HL_EFFECT_PROPERTY_ACTIVE, &bActive);
-    if (bActive)
-    {
-        hlEffectd(HL_EFFECT_PROPERTY_GAIN, gGain);
-        hlEffectd(HL_EFFECT_PROPERTY_MAGNITUDE, gMagnitude);
-        hlUpdateEffect(gEffect);
-        // To get the effect type, use the appropriate effect 
-        // query to get the integer representation of the effect,
-        // then cast that as an HLenum to get the string name.
-        printf("Effect properties for ");
-        HLint nType;
-        hlGetEffectiv(gEffect, HL_EFFECT_PROPERTY_TYPE, &nType);
-        printf("%s\n", newEffectType);
-    }
-    else
-    {
-        printf("No effect active\n");
-    }
-    printf("  Magnitude: %.1f\n", gMagnitude);
-    printf("  Gain: %.1f\n", gGain);
-    printf("\n");
-    hlEndFrame();
-}
-
-/******************************************************************************
- Stops the effect.
-******************************************************************************/
-void stopEffect()
-{
-    hlBeginFrame();
-    // Only necessary to stop the effect if it's active (i.e. on).
-    HLboolean bActive = false;
-    hlGetEffectbv(gEffect, HL_EFFECT_PROPERTY_ACTIVE, &bActive);
-    if (bActive)
-    {
-        hlStopEffect(gEffect);
-    }
-    hlEndFrame();
-
-}
-
-/******************************************************************************
- Starts an effect type.
-******************************************************************************/
-void startEffectType(HLenum newEffectType)
-{
-    // First stop the current effect.
-    stopEffect();
-
-    // Start the new effect, set whatever appropriate unique 
-    // properties are necessary for each effect type.
-    hlBeginFrame();
-    if (newEffectType == HL_EFFECT_SPRING)
-    {
-        hduVector3Dd position;
-        hlGetDoublev(HL_DEVICE_POSITION, position);
-        hlEffectdv(HL_EFFECT_PROPERTY_POSITION, position);
-    }
-    else if (newEffectType == HL_EFFECT_CONSTANT)
-    {
-        hlEffectd(HL_EFFECT_PROPERTY_DURATION, 100);
-        hlEffectdv(HL_EFFECT_PROPERTY_DIRECTION, hduVector3Dd(0, 0, 1));
-    }
-
-    hlStartEffect(newEffectType, gEffect);
-
-    hlEndFrame();
-
-    updateEffect(newEffectType);
-}
-
-/******************************************************************************
- Prints help.
-******************************************************************************/
-void printHelp()
-{
-    static const char help[] = { "\
------------------------------------------------\n\
-      Effect Attributes Example Menu Options\n\
-===============================================\n\
-Effect Types;\n\
-[F] : Switch to friction effect\n\
-[S] : Switch to spring effect\n\
-[C] : Switch to constant effect\n\
-[V] : Switch to viscous effect\n\
-[N] : Switch to no effect\n\
-\n\
-Effect Properties:\n\
-[-] : Decrease effect magnitude\n\
-[+] : Increase effect magnitude\n\
-[[] : Decrease effect gain\n\
-[]] : Increase effect gain\n\
-\n\
-Miscellaneous:\n\
-[H] : Print help menu\n\
-[Q] : Quit\n\
-\n\
-(note: Setting gain/magnitude at high values may cause\n\
-instability in some force effects and devices.)\n" };
-
-    printf("%s\n\n", help);
-
-}
 
 
 
@@ -343,8 +262,7 @@ void Initialize() {
     glLoadIdentity();
     glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 
-    //openHaptics initialize
-    initHL();
+    initHD();
 }
 
 void MyMouseClick(GLint Button, GLint State, GLint X, GLint Y) {
@@ -393,102 +311,7 @@ int main(int argc, char* argv[]) {
     glutMouseFunc(MyMouseClick);
     glutMultiMotionFunc(onMultiMotion);
 
-    printHelp();
 
-    // Loop until the user quits or an error occurs.
-   /* bool bDone = false;
-    while (!bDone)
-    {
-        if (_kbhit())
-        {
-            int key = toupper(_getch());
-            bool bNeedsUpdate = false;
-
-            switch (key)
-            {
-            case 'F':
-                newEffectType = HL_EFFECT_FRICTION;
-                startEffectType(newEffectType);
-                break;
-            case 'S':
-                newEffectType = HL_EFFECT_SPRING;
-                startEffectType(newEffectType);
-                break;
-            case 'C':
-                newEffectType = HL_EFFECT_CONSTANT;
-                startEffectType(newEffectType);
-                break;
-            case 'V':
-                newEffectType = HL_EFFECT_VISCOUS;
-                startEffectType(newEffectType);
-                break;
-            case 'N':
-                stopEffect();
-                break;
-
-            case ']':
-                gGain += 0.1f;
-                if (gGain > 1.0f)
-                    gGain = 1.0f;
-                bNeedsUpdate = true;
-                break;
-            case '[':
-                gGain -= 0.1f;
-                if (gGain < 0.0f)
-                    gGain = 0.0f;
-                bNeedsUpdate = true;
-                break;
-            case '+':
-            case '=':
-                gMagnitude += 0.1f;
-                if (gMagnitude > 1.0f)
-                    gMagnitude = 1.0f;
-                bNeedsUpdate = true;
-                break;
-            case '-':
-            case '_':
-                gMagnitude -= 0.1f;
-                if (gMagnitude < 0.0f)
-                    gMagnitude = 0.0f;
-                bNeedsUpdate = true;
-                break;
-
-            case 'Q':
-                bDone = true;
-                break;
-            case 'H':
-            default:
-                printHelp();
-                break;
-            }
-
-            if (bNeedsUpdate)
-            {
-                updateEffect(newEffectType);
-            }
-
-            // Check for any errors.
-            HLerror error;
-            while (HL_ERROR(error = hlGetError()))
-            {
-                fprintf(stderr, "HL Error: %s\n", error.errorCode);
-
-                if (error.errorCode == HL_DEVICE_ERROR)
-                {
-                    hduPrintError(stderr, &error.errorInfo,
-                        "Error during haptic rendering\n");
-                }
-            }
-        }
-    }
-    */
-    // Release the effect id.
-    hlDeleteEffects(gEffect, 1);
-    
-    // Cleanup.
-    hlMakeCurrent(NULL);
-    hlDeleteContext(ghHLRC);
-    hdDisableDevice(ghHD);
     
     glutMainLoop();
 
