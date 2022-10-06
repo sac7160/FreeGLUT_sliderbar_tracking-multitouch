@@ -18,6 +18,7 @@
 /******************************************************************************
 *******************************************************************************/
 static HHD ghHD = HD_INVALID_HANDLE;
+
 static HDSchedulerHandle hUpdateDeviceCallback = HD_INVALID_HANDLE;
 
 static HDboolean isActive = HD_FALSE;
@@ -29,8 +30,64 @@ HHLRC ghHLRC;
 HLuint gEffect;
 
 /* Effect properties */
-float gGain = .2f;
-float gMagnitude = .5f;
+float gGain = 1.0f;
+float gMagnitude = 1.0f;
+
+
+/******************************************************************************
+ Updates the effect with new properties.
+******************************************************************************/
+void updateEffect(HLenum newEffectType)
+{
+    // Update the gain and magnitude of the current effect.
+    // The effect must be active.  
+    // Note that not all effects will use all of these 
+    // properties.
+ 
+    hlBeginFrame();
+    HLboolean bActive = false;
+
+    hlGetEffectbv(gEffect, HL_EFFECT_PROPERTY_ACTIVE, &bActive);
+
+    if (bActive)
+    {
+        hlEffectd(HL_EFFECT_PROPERTY_GAIN, gGain);
+        hlEffectd(HL_EFFECT_PROPERTY_MAGNITUDE, gMagnitude);
+        hlUpdateEffect(gEffect);
+        // To get the effect type, use the appropriate effect 
+        // query to get the integer representation of the effect,
+        // then cast that as an HLenum to get the string name.
+        printf("Effect properties for ");
+        HLint nType;
+        hlGetEffectiv(gEffect, HL_EFFECT_PROPERTY_TYPE, &nType);
+        printf("%s\n", newEffectType);
+    }
+    else
+    {
+        printf("No effect active\n");
+    }
+    printf("  Magnitude: %.1f\n", gMagnitude);
+    printf("  Gain: %.1f\n", gGain);
+    printf("\n");
+    hlEndFrame();
+    hdEndFrame(ghHD);
+}
+
+
+void stopEffect()
+{
+    
+    hlBeginFrame();
+    // Only necessary to stop the effect if it's active (i.e. on).
+    HLboolean bActive = false;
+    hlGetEffectbv(gEffect, HL_EFFECT_PROPERTY_ACTIVE, &bActive);
+    if (bActive)
+    {
+        hlStopEffect(gEffect);
+    }
+    hlEndFrame();
+
+}
 
 
 /*******************************************************************************
@@ -48,7 +105,7 @@ HDCallbackCode HDCALLBACK mainCallback(void* pUserData)
 
     hdGetIntegerv(HD_CURRENT_BUTTONS, &currentButtons);
     hdGetIntegerv(HD_LAST_BUTTONS, &lastButtons);
-    
+
     /* Detect button state transitions. */
     if ((currentButtons & HD_DEVICE_BUTTON_1) != 0 &&
         (lastButtons & HD_DEVICE_BUTTON_1) == 0)
@@ -64,11 +121,11 @@ HDCallbackCode HDCALLBACK mainCallback(void* pUserData)
 
     if (isActive)   //haptic effect
     {
-        std::cout << "isActive" << '\n';
+        //std::cout << "isActive" << '\n';
         // Start the new effect, set whatever appropriate unique 
         // properties are necessary for each effect type.
         hlBeginFrame();
-        
+
         hlStartEffect(HL_EFFECT_FRICTION, gEffect);
 
         hlEndFrame();
@@ -97,64 +154,164 @@ HDCallbackCode HDCALLBACK mainCallback(void* pUserData)
     return HD_CALLBACK_CONTINUE;
 }
 
-void stopEffect()
+void startEffectType(HLenum newEffectType)
 {
+    // First stop the current effect.
+    stopEffect();
+
+    // Start the new effect, set whatever appropriate unique 
+    // properties are necessary for each effect type.
+  
     hlBeginFrame();
-    // Only necessary to stop the effect if it's active (i.e. on).
-    HLboolean bActive = false;
-    hlGetEffectbv(gEffect, HL_EFFECT_PROPERTY_ACTIVE, &bActive);
-    if (bActive)
-    {
-        hlStopEffect(gEffect);
-    }
+
+    hlEffectd(HL_EFFECT_PROPERTY_GAIN, gGain);
+    hlEffectd(HL_EFFECT_PROPERTY_MAGNITUDE, gMagnitude);
+    hlStartEffect(newEffectType, gEffect);
+    
     hlEndFrame();
 
+    updateEffect(newEffectType);
 }
+
+ HDboolean first = HD_TRUE;
 
 HDCallbackCode HDCALLBACK mainCallback2(void* pUserData)
 {
     int currentButtons, lastButtons;
 
     HDErrorInfo error;
+
+    hduVector3Dd position;
     hduVector3Dd force = { 0, 0, 0 };
+    HDdouble forceClamp;
 
+   
     hlBeginFrame();
+    
 
-    hdGetIntegerv(HD_CURRENT_BUTTONS, &currentButtons);
-    hdGetIntegerv(HD_LAST_BUTTONS, &lastButtons);
+    //hdGetIntegerv(HD_CURRENT_BUTTONS, &currentButtons);
+    //hdGetIntegerv(HD_LAST_BUTTONS, &lastButtons);
 
     /* Detect button state transitions. */
-    if ((currentButtons & HD_DEVICE_BUTTON_1) != 0 &&
+    /*if ((currentButtons & HD_DEVICE_BUTTON_1) != 0 &&
         (lastButtons & HD_DEVICE_BUTTON_1) == 0)
     {
+        std::cout << "isActive true로 바꿈";
         isActive = HD_TRUE;
         //hdGetDoublev(HD_CURRENT_POSITION, gAnchorPosition); position확인 주석처리
     }
     else if ((currentButtons & HD_DEVICE_BUTTON_1) == 0 &&
         (lastButtons & HD_DEVICE_BUTTON_1) != 0)
     {
+        std::cout << "isActive false로 바꿈";
         isActive = HD_FALSE;
-    }
-
-    if (isActive)   //haptic effect
+    }*/
+    
+    if (isActive && first)   //haptic effect
     {
         std::cout << "isActive" << '\n';
         // Start the new effect, set whatever appropriate unique 
         // properties are necessary for each effect type.
+        //startEffectType(HL_EFFECT_FRICTION); 
+
       
-        stopEffect();
-        hlStartEffect(HL_EFFECT_FRICTION, gEffect);
+
+        
        
+        first = false;
+
+
     }
 
-    hdSetDoublev(HD_CURRENT_FORCE, force);
+    if (first)
+    {
+        hlBeginFrame(); 
+        hlEffectd(HL_EFFECT_PROPERTY_DURATION, 1000); 
+        hlEffectd(HL_EFFECT_PROPERTY_GAIN, 0.4); 
+        hlEffectd(HL_EFFECT_PROPERTY_MAGNITUDE, 0.4); 
+        hlTriggerEffect(HL_EFFECT_FRICTION);   
+        hlEndFrame();
+        first = HL_FALSE;
+    }
 
     hlEndFrame();
+ 
 
     return HD_CALLBACK_CONTINUE;
 }
 
-void initHD()
+HDCallbackCode HDCALLBACK test(void* data)
+{
+    const HDdouble kStiffness = 0.075; /* N/mm */
+    const HDdouble kGravityWellInfluence = 40; /* mm */
+
+    /* This is the position of the gravity well in cartesian
+       (i.e. x,y,z) space. */
+    static const hduVector3Dd wellPos = { 0,0,0 };
+
+    HDErrorInfo error;
+    hduVector3Dd position;
+    hduVector3Dd force;
+    hduVector3Dd positionTwell;
+
+    HHD hHD = hdGetCurrentDevice();
+
+    /* Begin haptics frame.  ( In general, all state-related haptics calls
+       should be made within a frame. ) */
+    hdBeginFrame(hHD);
+
+    /* Get the current position of the device. */
+    hdGetDoublev(HD_CURRENT_POSITION, position);
+
+    memset(force, 0, sizeof(hduVector3Dd));
+
+    /* >  positionTwell = wellPos-position  <
+       Create a vector from the device position towards the gravity
+       well's center. */
+    hduVecSubtract(positionTwell, wellPos, position);
+
+    /* If the device position is within some distance of the gravity well's
+       center, apply a spring force towards gravity well's center.  The force
+       calculation differs from a traditional gravitational body in that the
+       closer the device is to the center, the less force the well exerts;
+       the device behaves as if a spring were connected between itself and
+       the well's center. */
+    if (hduVecMagnitude(positionTwell) < kGravityWellInfluence)
+    {
+        /* >  F = k * x  <
+           F: Force in Newtons (N)
+           k: Stiffness of the well (N/mm)
+           x: Vector from the device endpoint position to the center
+           of the well. */
+        hduVecScale(force, positionTwell, kStiffness);
+    }
+
+    /* Send the force to the device. */
+    hdSetDoublev(HD_CURRENT_FORCE, force);
+
+    /* End haptics frame. */
+    hdEndFrame(hHD);
+
+    /* Check for errors and abort the callback if a scheduler error
+       is detected. */
+    if (HD_DEVICE_ERROR(error = hdGetError()))
+    {
+        hduPrintError(stderr, &error,
+            "Error detected while rendering gravity well\n");
+
+        if (hduIsSchedulerError(&error))
+        {
+            return HD_CALLBACK_DONE;
+        }
+    }
+
+    /* Signify that the callback should continue running, i.e. that
+       it will be called again the next scheduler tick. */
+    return HD_CALLBACK_CONTINUE;
+}
+
+
+/*void initHD()
 {
     HDErrorInfo error;
     ghHD = hdInitDevice(HD_DEFAULT_DEVICE);
@@ -177,8 +334,9 @@ void initHD()
     }
 
 }
+*/
 
-void initHL()
+void initHD()
 {
     HDErrorInfo error;
 
@@ -186,28 +344,53 @@ void initHL()
     if (HD_DEVICE_ERROR(error = hdGetError()))
     {
         hduPrintError(stderr, &error, "Failed to initialize haptic device");
-        fprintf(stderr, "\nPress any key to quit.\n");
+        fprintf(stderr, "Press any key to exit");
         getchar();
         exit(-1);
     }
+
+    printf("Found device model: %s / serial number: %s.\n\n",
+        hdGetString(HD_DEVICE_MODEL_TYPE), hdGetString(HD_DEVICE_SERIAL_NUMBER));
+
+    /////////////////
     hUpdateDeviceCallback = hdScheduleAsynchronous(
-        mainCallback2, 0, HD_MAX_SCHEDULER_PRIORITY);
+        test, 0, HD_MAX_SCHEDULER_PRIORITY);
 
+    hdEnable(HD_FORCE_OUTPUT);
     hdStartScheduler();
-    if (HD_DEVICE_ERROR(error = hdGetError()))
-    {
-        hduPrintError(stderr, &error, "Failed to start the scheduler");
-        exit(-1);
-    }
 
-    /*example  initHL중*/
+}
+
+void initHL()
+{
+ 
+
     ghHLRC = hlCreateContext(ghHD);
     hlMakeCurrent(ghHLRC);
 
-    hlDisable(HL_USE_GL_MODELVIEW);
+   
+
+    //hlDisable(HL_USE_GL_MODELVIEW);
 
     gEffect = hlGenEffects(1);
-    /*******************/
+  
+
+  
+
+    hUpdateDeviceCallback = hdScheduleAsynchronous(
+        test, 0, HD_MAX_SCHEDULER_PRIORITY);
+
+    hdEnable(HD_FORCE_OUTPUT);
+    hdStartScheduler();
+    
+    /*
+    hdScheduleAsynchronous(
+        mainCallback2, 0, HD_MAX_SCHEDULER_PRIORITY);
+    ghHLRC = hlCreateContext(ghHD);
+    hlMakeCurrent(ghHLRC);
+    hdEnable(HD_FORCE_OUTPUT);
+   */
+
 
 }
 
@@ -221,7 +404,7 @@ void initHL()
 
 using namespace std;
 
-Serial* SP = new Serial("\\\\.\\COM3");    
+Serial* SP = new Serial("\\\\.\\COM3");
 int dataLength = 255;
 
 #define NUM_DEVICES 1
@@ -265,7 +448,7 @@ Square::Square()
 void Square::draw(Square* sqr)
 {
 
-    glColor3f(0.827451,	0.827451,0.827451);
+    glColor3f(0.827451, 0.827451, 0.827451);
     glBegin(GL_QUADS);
     for (int i = 0; i < 4; ++i)
     {
@@ -273,7 +456,7 @@ void Square::draw(Square* sqr)
     }
     glEnd();
 
-    glColor3f(0.745098, 0.745098 , 0.745098);
+    glColor3f(0.745098, 0.745098, 0.745098);
     glBegin(GL_LINES);
     glVertex2f((sqr->pts[0].x + sqr->pts[1].x) / 2, sqr->pts[0].y);
     glVertex2f((sqr->pts[0].x + sqr->pts[1].x) / 2, sqr->pts[2].y);
@@ -304,8 +487,8 @@ Square* sqr = new Square;
 GLint TopLeftX, TopLeftY, BottomRightX, BottomRightY;
 void onDisplay(void) {
 
-    
-    glClear(GL_COLOR_BUFFER_BIT); 
+
+    glClear(GL_COLOR_BUFFER_BIT);
 
     glColor3f(0.0, 0.0, 0.0);
     glBegin(GL_POLYGON);
@@ -314,8 +497,8 @@ void onDisplay(void) {
     glVertex3f(0.8, 0.53, 0.0);
     glVertex3f(0.2, 0.53, 0.0);
     glEnd();
-    
-    glColor3f(0	,0.74902	,1);
+
+    glColor3f(0, 0.74902, 1);
     glBegin(GL_POLYGON);
     glVertex3f(0.2, 0.47, 0.0);
     glVertex3f(tmpX, 0.47, 0.0);
@@ -327,7 +510,7 @@ void onDisplay(void) {
 
     glFlush();
 
-    
+
 }
 
 int cnt = 0, tmp = 0;
@@ -337,7 +520,7 @@ void onMultiMotion(int cursor_id, int x, int y) {
     cursors[0][cursor_id].x = (float)x;
     cursors[0][cursor_id].y = (float)y;
 
-    cout << " Cursor_ID : " << cursor_id << " =>  x : " << cursors[0][cursor_id].x <<  '\n';
+    cout << " Cursor_ID : " << cursor_id << " =>  x : " << cursors[0][cursor_id].x << '\n';
 
     if (tmp != cursor_id)
     {
@@ -346,7 +529,7 @@ void onMultiMotion(int cursor_id, int x, int y) {
     }
     if (cnt != 0 && cnt % 2 == 0)
     {
-        Points mousePt = sqr->mouse(cursors[0][tmp].x , cursors[0][tmp].y );
+        Points mousePt = sqr->mouse(cursors[0][tmp].x, cursors[0][tmp].y);
 
         Points* mouse = &mousePt;
 
@@ -371,12 +554,13 @@ void Initialize() {
     glLoadIdentity();
     glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 
-    initHL();
+    initHD();
+    //initHL();
 }
 
 void MyMouseClick(GLint Button, GLint State, GLint X, GLint Y) {
     if (Button == GLUT_LEFT_BUTTON && State == GLUT_DOWN) {
-        SP->WriteData("0", dataLength) ;
+        SP->WriteData("0", dataLength);
     }
     else if (Button == GLUT_LEFT_BUTTON && State == GLUT_UP)
     {
@@ -389,7 +573,7 @@ int main(int argc, char* argv[]) {
 
 
     glutInit(&argc, argv);
-   // glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    // glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(1200, 500);
     glutInitWindowPosition(0, 0);
@@ -412,8 +596,8 @@ int main(int argc, char* argv[]) {
    // glutAddMenuEntry("Quit", 0);
    // glutAttachMenu(GLUT_RIGHT_BUTTON);
 
-  
-   
+
+
     ////////////////
     Initialize();
     glutDisplayFunc(onDisplay);
@@ -421,7 +605,7 @@ int main(int argc, char* argv[]) {
     glutMultiMotionFunc(onMultiMotion);
 
 
-    
+
     glutMainLoop();
 
     return EXIT_SUCCESS;
