@@ -241,10 +241,32 @@ HDCallbackCode HDCALLBACK mainCallback2(void* pUserData)
 }
 
 bool once = true;
+HDdouble kStiffness = 0.5; /* N/mm 이 변수로 N 조절*/
+
+//키보드 입력에 따른 force 조절
+void adjust_force()
+{
+    if (_kbhit())
+    {
+        //int key = toupper(getchar());
+        char key = getchar();
+
+        switch (key)
+        {
+            case '_':
+            case '-':
+                kStiffness -= 0.1;
+            case '=':
+            case '+':
+                kStiffness += 0.1;
+        }
+        once = true;
+    }
+}
 
 HDCallbackCode HDCALLBACK test(void* data)
 {
-    const HDdouble kStiffness = 0.5; /* N/mm 이 변수로 N 조절*/
+   
     const HDdouble kGravityWellInfluence = 40; /* mm */
 
     /* This is the position of the gravity well in cartesian
@@ -271,29 +293,10 @@ HDCallbackCode HDCALLBACK test(void* data)
     hduVector3Dd previous_position;
     hduVecSubtract(previous_position, position,sub);    //현재 position x방향 -1 position
 
-    /* >  positionTwell = wellPos-position  <
-       Create a vector from the device position towards the gravity
-       well's center. */
-    //hduVecSubtract(positionTwell, wellPos, position);
 
     hduVector3Dd tmp;
     hduVecSubtract(tmp,  previous_position,position );
 
-    /* If the device position is within some distance of the gravity well's
-       center, apply a spring force towards gravity well's center.  The force
-       calculation differs from a traditional gravitational body in that the
-       closer the device is to the center, the less force the well exerts;
-       the device behaves as if a spring were connected between itself and
-       the well's center. */
-    //if (hduVecMagnitude(positionTwell) < kGravityWellInfluence)
-    //{
-        /* >  F = k * x  <
-           F: Force in Newtons (N)
-           k: Stiffness of the well (N/mm)
-           x: Vector from the device endpoint position to the center
-           of the well. */
-    //    hduVecScale(force, positionTwell, kStiffness);
-   // }
 
     //현재 position과 이전 position 1차이
     /* > F = k * x <
@@ -306,12 +309,18 @@ HDCallbackCode HDCALLBACK test(void* data)
 
     /* Send the force to the device. */
     hdSetDoublev(HD_CURRENT_FORCE, force);
+
     if (once) std::cout << kStiffness << "N 크기의 force 생성";
     once = false;
     
 
     /* End haptics frame. */
     hdEndFrame(hHD);
+
+
+    //force 조절 하는 부분 추가해야함
+    adjust_force();
+
 
     /* Check for errors and abort the callback if a scheduler error
        is detected. */
