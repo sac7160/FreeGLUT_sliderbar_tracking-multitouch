@@ -240,14 +240,16 @@ HDCallbackCode HDCALLBACK mainCallback2(void* pUserData)
     return HD_CALLBACK_CONTINUE;
 }
 
+bool once = true;
+
 HDCallbackCode HDCALLBACK test(void* data)
 {
-    const HDdouble kStiffness = 0.075; /* N/mm */
+    const HDdouble kStiffness = 0.5; /* N/mm 이 변수로 N 조절*/
     const HDdouble kGravityWellInfluence = 40; /* mm */
 
     /* This is the position of the gravity well in cartesian
        (i.e. x,y,z) space. */
-    static const hduVector3Dd wellPos = { 0,0,0 };
+    static const hduVector3Dd wellPos = { -100,0,0 };
 
     HDErrorInfo error;
     hduVector3Dd position;
@@ -265,10 +267,17 @@ HDCallbackCode HDCALLBACK test(void* data)
 
     memset(force, 0, sizeof(hduVector3Dd));
 
+    hduVector3Dd sub = {1,0,0};
+    hduVector3Dd previous_position;
+    hduVecSubtract(previous_position, position,sub);    //현재 position x방향 -1 position
+
     /* >  positionTwell = wellPos-position  <
        Create a vector from the device position towards the gravity
        well's center. */
-    hduVecSubtract(positionTwell, wellPos, position);
+    //hduVecSubtract(positionTwell, wellPos, position);
+
+    hduVector3Dd tmp;
+    hduVecSubtract(tmp,  previous_position,position );
 
     /* If the device position is within some distance of the gravity well's
        center, apply a spring force towards gravity well's center.  The force
@@ -276,18 +285,30 @@ HDCallbackCode HDCALLBACK test(void* data)
        closer the device is to the center, the less force the well exerts;
        the device behaves as if a spring were connected between itself and
        the well's center. */
-    if (hduVecMagnitude(positionTwell) < kGravityWellInfluence)
-    {
+    //if (hduVecMagnitude(positionTwell) < kGravityWellInfluence)
+    //{
         /* >  F = k * x  <
            F: Force in Newtons (N)
            k: Stiffness of the well (N/mm)
            x: Vector from the device endpoint position to the center
            of the well. */
-        hduVecScale(force, positionTwell, kStiffness);
-    }
+    //    hduVecScale(force, positionTwell, kStiffness);
+   // }
+
+    //현재 position과 이전 position 1차이
+    /* > F = k * x <
+        F: Force in Newtons(N)
+        k : Stiffness of the well(N / mm)
+        x : 오른쪽 방향 1mm
+    */
+
+    hduVecScale(force, tmp, kStiffness);
 
     /* Send the force to the device. */
     hdSetDoublev(HD_CURRENT_FORCE, force);
+    if (once) std::cout << kStiffness << "N 크기의 force 생성";
+    once = false;
+    
 
     /* End haptics frame. */
     hdEndFrame(hHD);
