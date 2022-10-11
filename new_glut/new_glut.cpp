@@ -1,5 +1,4 @@
-﻿
-#include <iostream>
+﻿#include <iostream>
 
 
 #include <gl/glew.h>
@@ -15,8 +14,7 @@
 
 # include <conio.h>
 
-/******************************************************************************
-*******************************************************************************/
+
 static HHD ghHD = HD_INVALID_HANDLE;
 
 static HDSchedulerHandle hUpdateDeviceCallback = HD_INVALID_HANDLE;
@@ -43,7 +41,7 @@ void updateEffect(HLenum newEffectType)
     // The effect must be active.  
     // Note that not all effects will use all of these 
     // properties.
- 
+
     hlBeginFrame();
     HLboolean bActive = false;
 
@@ -76,7 +74,7 @@ void updateEffect(HLenum newEffectType)
 
 void stopEffect()
 {
-    
+
     hlBeginFrame();
     // Only necessary to stop the effect if it's active (i.e. on).
     HLboolean bActive = false;
@@ -90,70 +88,6 @@ void stopEffect()
 }
 
 
-/*******************************************************************************
- This is the main haptic rendering callback.  This callback will render an
- anchored spring force when the user presses the button.
-*******************************************************************************/
-HDCallbackCode HDCALLBACK mainCallback(void* pUserData)
-{
-    int currentButtons, lastButtons;
-
-    HDErrorInfo error;
-    hduVector3Dd force = { 0, 0, 0 };
-
-    //hdBeginFrame(ghHD);
-
-    hdGetIntegerv(HD_CURRENT_BUTTONS, &currentButtons);
-    hdGetIntegerv(HD_LAST_BUTTONS, &lastButtons);
-
-    /* Detect button state transitions. */
-    if ((currentButtons & HD_DEVICE_BUTTON_1) != 0 &&
-        (lastButtons & HD_DEVICE_BUTTON_1) == 0)
-    {
-        isActive = HD_TRUE;
-        //hdGetDoublev(HD_CURRENT_POSITION, gAnchorPosition); position확인 주석처리
-    }
-    else if ((currentButtons & HD_DEVICE_BUTTON_1) == 0 &&
-        (lastButtons & HD_DEVICE_BUTTON_1) != 0)
-    {
-        isActive = HD_FALSE;
-    }
-
-    if (isActive)   //haptic effect
-    {
-        //std::cout << "isActive" << '\n';
-        // Start the new effect, set whatever appropriate unique 
-        // properties are necessary for each effect type.
-        hlBeginFrame();
-
-        hlStartEffect(HL_EFFECT_FRICTION, gEffect);
-
-        hlEndFrame();
-
-    }
-
-    hdSetDoublev(HD_CURRENT_FORCE, force);
-
-    //hdEndFrame(ghHD);
-
-    if (HD_DEVICE_ERROR(error = hdGetError()))
-    {
-        if (hduIsForceError(&error))
-        {
-            /* Disable the anchor following the force error. */
-            isActive = HD_FALSE;
-        }
-        else
-        {
-            /* This is likely a more serious error, so bail. */
-            hduPrintError(stderr, &error, "Error during haptic rendering");
-            exit(-1);
-        }
-    }
-
-    return HD_CALLBACK_CONTINUE;
-}
-
 void startEffectType(HLenum newEffectType)
 {
     // First stop the current effect.
@@ -161,84 +95,19 @@ void startEffectType(HLenum newEffectType)
 
     // Start the new effect, set whatever appropriate unique 
     // properties are necessary for each effect type.
-  
+
     hlBeginFrame();
 
     hlEffectd(HL_EFFECT_PROPERTY_GAIN, gGain);
     hlEffectd(HL_EFFECT_PROPERTY_MAGNITUDE, gMagnitude);
     hlStartEffect(newEffectType, gEffect);
-    
+
     hlEndFrame();
 
     updateEffect(newEffectType);
 }
 
- HDboolean first = HD_TRUE;
 
-HDCallbackCode HDCALLBACK mainCallback2(void* pUserData)
-{
-    int currentButtons, lastButtons;
-
-    HDErrorInfo error;
-
-    hduVector3Dd position;
-    hduVector3Dd force = { 0, 0, 0 };
-    HDdouble forceClamp;
-
-   
-    hlBeginFrame();
-    
-
-    //hdGetIntegerv(HD_CURRENT_BUTTONS, &currentButtons);
-    //hdGetIntegerv(HD_LAST_BUTTONS, &lastButtons);
-
-    /* Detect button state transitions. */
-    /*if ((currentButtons & HD_DEVICE_BUTTON_1) != 0 &&
-        (lastButtons & HD_DEVICE_BUTTON_1) == 0)
-    {
-        std::cout << "isActive true로 바꿈";
-        isActive = HD_TRUE;
-        //hdGetDoublev(HD_CURRENT_POSITION, gAnchorPosition); position확인 주석처리
-    }
-    else if ((currentButtons & HD_DEVICE_BUTTON_1) == 0 &&
-        (lastButtons & HD_DEVICE_BUTTON_1) != 0)
-    {
-        std::cout << "isActive false로 바꿈";
-        isActive = HD_FALSE;
-    }*/
-    
-    if (isActive && first)   //haptic effect
-    {
-        std::cout << "isActive" << '\n';
-        // Start the new effect, set whatever appropriate unique 
-        // properties are necessary for each effect type.
-        //startEffectType(HL_EFFECT_FRICTION); 
-
-      
-
-        
-       
-        first = false;
-
-
-    }
-
-    if (first)
-    {
-        hlBeginFrame(); 
-        hlEffectd(HL_EFFECT_PROPERTY_DURATION, 1000); 
-        hlEffectd(HL_EFFECT_PROPERTY_GAIN, 0.4); 
-        hlEffectd(HL_EFFECT_PROPERTY_MAGNITUDE, 0.4); 
-        hlTriggerEffect(HL_EFFECT_FRICTION);   
-        hlEndFrame();
-        first = HL_FALSE;
-    }
-
-    hlEndFrame();
- 
-
-    return HD_CALLBACK_CONTINUE;
-}
 
 bool once = true;
 HDdouble kStiffness = 0.5; /* N/mm 이 변수로 N 조절*/
@@ -248,17 +117,19 @@ void adjust_force()
 {
     if (_kbhit())
     {
-        //int key = toupper(getchar());
-        char key = getchar();
+        int key = toupper(getchar());
+        //char key = getchar();
 
         switch (key)
         {
-            case '_':
-            case '-':
-                kStiffness -= 0.1;
-            case '=':
-            case '+':
-                kStiffness += 0.1;
+        case '_':
+        case '-':
+            kStiffness -= 0.1;
+            break;
+        case '=':
+        case '+':
+            kStiffness += 0.1;
+            break;
         }
         once = true;
     }
@@ -266,8 +137,7 @@ void adjust_force()
 
 HDCallbackCode HDCALLBACK test(void* data)
 {
-   
-    const HDdouble kGravityWellInfluence = 40; /* mm */
+
 
     /* This is the position of the gravity well in cartesian
        (i.e. x,y,z) space. */
@@ -289,13 +159,13 @@ HDCallbackCode HDCALLBACK test(void* data)
 
     memset(force, 0, sizeof(hduVector3Dd));
 
-    hduVector3Dd sub = {1,0,0};
+    hduVector3Dd sub = { 1,0,0 };
     hduVector3Dd previous_position;
-    hduVecSubtract(previous_position, position,sub);    //현재 position x방향 -1 position
+    hduVecSubtract(previous_position, position, sub);    //현재 position x방향 -1 position
 
 
     hduVector3Dd tmp;
-    hduVecSubtract(tmp,  previous_position,position );
+    hduVecSubtract(tmp, previous_position, position);
 
 
     //현재 position과 이전 position 1차이
@@ -307,18 +177,18 @@ HDCallbackCode HDCALLBACK test(void* data)
 
     hduVecScale(force, tmp, kStiffness);
 
+
     /* Send the force to the device. */
     hdSetDoublev(HD_CURRENT_FORCE, force);
 
     if (once) std::cout << kStiffness << "N 크기의 force 생성";
     once = false;
-    
+
 
     /* End haptics frame. */
     hdEndFrame(hHD);
 
 
-    //force 조절 하는 부분 추가해야함
     adjust_force();
 
 
@@ -341,31 +211,6 @@ HDCallbackCode HDCALLBACK test(void* data)
 }
 
 
-/*void initHD()
-{
-    HDErrorInfo error;
-    ghHD = hdInitDevice(HD_DEFAULT_DEVICE);
-    if (HD_DEVICE_ERROR(error = hdGetError()))
-    {
-        hduPrintError(stderr, &error, "Failed to initialize haptic device");
-        fprintf(stderr, "\nPress any key to quit.\n");
-        getchar();
-        exit(-1);
-    }
-
-    hUpdateDeviceCallback = hdScheduleAsynchronous(
-        mainCallback, 0, HD_MAX_SCHEDULER_PRIORITY);
-
-    hdStartScheduler();
-    if (HD_DEVICE_ERROR(error = hdGetError()))
-    {
-        hduPrintError(stderr, &error, "Failed to start the scheduler");
-        exit(-1);
-    }
-
-}
-*/
-
 void initHD()
 {
     HDErrorInfo error;
@@ -382,9 +227,10 @@ void initHD()
     printf("Found device model: %s / serial number: %s.\n\n",
         hdGetString(HD_DEVICE_MODEL_TYPE), hdGetString(HD_DEVICE_SERIAL_NUMBER));
 
-    /////////////////
+
     hUpdateDeviceCallback = hdScheduleAsynchronous(
         test, 0, HD_MAX_SCHEDULER_PRIORITY);
+
 
     hdEnable(HD_FORCE_OUTPUT);
     hdStartScheduler();
@@ -393,34 +239,23 @@ void initHD()
 
 void initHL()
 {
- 
+    HLuint gMyShapeId;
+    HHLRC hHLRC;
 
-    ghHLRC = hlCreateContext(ghHD);
-    hlMakeCurrent(ghHLRC);
+    // Create a haptic rendering context and activate it.
+    hHLRC = hlCreateContext(ghHD);
+    hlMakeCurrent(hHLRC);
 
-   
+    // Reserve an id for the shape
+    gMyShapeId = hlGenShapes(1);
 
-    //hlDisable(HL_USE_GL_MODELVIEW);
-
-    gEffect = hlGenEffects(1);
-  
-
-  
-
-    hUpdateDeviceCallback = hdScheduleAsynchronous(
-        test, 0, HD_MAX_SCHEDULER_PRIORITY);
-
-    hdEnable(HD_FORCE_OUTPUT);
-    hdStartScheduler();
-    
-    /*
-    hdScheduleAsynchronous(
-        mainCallback2, 0, HD_MAX_SCHEDULER_PRIORITY);
-    ghHLRC = hlCreateContext(ghHD);
-    hlMakeCurrent(ghHLRC);
-    hdEnable(HD_FORCE_OUTPUT);
-   */
-
+    // Specify the boundaries for the workspace of the haptic device
+   // in millimeters in the cordinates of the haptic device.
+   // The haptics engine will map the view volume to this workspace
+    hlWorkspace(-100, 0, -70, 80, 80, 20);
+    hlMatrixMode(HL_TOUCHWORKSPACE);
+    hlLoadIdentity();
+    hlOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 
 }
 
@@ -576,8 +411,6 @@ void onMultiMotion(int cursor_id, int x, int y) {
 }
 
 
-
-
 void Initialize() {
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glMatrixMode(GL_PROJECTION);
@@ -620,20 +453,10 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
     }
 
-
-    /////////////////
-
-   // glutAddMenuEntry("Quit", 0);
-   // glutAttachMenu(GLUT_RIGHT_BUTTON);
-
-
-
-    ////////////////
     Initialize();
     glutDisplayFunc(onDisplay);
     glutMouseFunc(MyMouseClick);
     glutMultiMotionFunc(onMultiMotion);
-
 
 
     glutMainLoop();
