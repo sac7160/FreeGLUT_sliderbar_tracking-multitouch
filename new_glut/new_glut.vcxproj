@@ -131,10 +131,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="new_glut.cpp" />
+    <ClCompile Include="exp_geometry.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="phantom_helper.cpp" />
     <ClCompile Include="Serial.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="exp_geometry.h" />
+    <ClInclude Include="phantom_helper.h" />
     <ClInclude Include="SerialClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
