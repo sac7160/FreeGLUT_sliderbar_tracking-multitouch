@@ -9,13 +9,12 @@
 #include <iostream>
 
 
+
 namespace PHANTOM_TOOLS 
 {
-	void updateEffect(HLenum newEffectType);
-	void stopEffect();
-	void startEffectType(HLenum newEffectType);
 	void adjust_force();
 	void initHD();
+	void exitHandler();
 }
 
 HDCallbackCode HDCALLBACK DeviceStateCallback(void* data);

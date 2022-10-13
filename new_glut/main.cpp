@@ -1,6 +1,6 @@
 #include <iostream>
-
-#include "exp_geometry.h"
+#include "phantom_helper.h"
+#include "perception_exp.h"
 
 void initialize();
 void onDisplay();
@@ -39,6 +39,8 @@ int main(int argc, char* argv[]) {
 
 
     glutMainLoop();
+    
+    atexit(PHANTOM_TOOLS::exitHandler);
 
     return EXIT_SUCCESS;
 }
@@ -62,3 +64,4 @@ void MyMultiMotion(int cursor_id, int x, int y)
 {
     myExp.onMultiMotion(cursor_id, x, y);
 }
+

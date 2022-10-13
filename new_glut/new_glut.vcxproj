@@ -131,13 +131,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="exp_geometry.cpp" />
+    <ClCompile Include="perception_exp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="phantom_helper.cpp" />
     <ClCompile Include="Serial.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="exp_geometry.h" />
+    <ClInclude Include="perception_exp.h" />
     <ClInclude Include="phantom_helper.h" />
     <ClInclude Include="SerialClass.h" />
   </ItemGroup>

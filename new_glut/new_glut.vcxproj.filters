@@ -21,7 +21,7 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="exp_geometry.cpp">
+    <ClCompile Include="perception_exp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="phantom_helper.cpp">
@@ -32,7 +32,7 @@
     <ClInclude Include="SerialClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="exp_geometry.h">
+    <ClInclude Include="perception_exp.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="phantom_helper.h">

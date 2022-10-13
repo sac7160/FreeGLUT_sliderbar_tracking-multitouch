@@ -1,6 +1,11 @@
 #include "phantom_helper.h"
 # include <conio.h>
 
+#define MINUS 72
+#define MINUS_SHIFT 80
+#define PLUS 75
+#define PLUS_SHIFT 77
+
 static HHD ghHD = HD_INVALID_HANDLE;
 
 static HDSchedulerHandle hUpdateDeviceCallback = HD_INVALID_HANDLE;
@@ -8,10 +13,10 @@ static HDSchedulerHandle hUpdateDeviceCallback = HD_INVALID_HANDLE;
 static HDboolean isActive = HD_FALSE;
 
 /* Handle to haptic rendering context. */
-HHLRC ghHLRC;
+//HHLRC ghHLRC;
 
 //effect id
-HLuint gEffect;
+//HLuint gEffect;
 
 /* Effect properties */
 float gGain = 1.0f;
@@ -53,21 +58,42 @@ namespace PHANTOM_TOOLS
     {
         if (_kbhit())
         {
-            int key = toupper(getchar());
-            //char key = getchar();
+            int key = toupper(_getch());
 
             switch (key)
             {
             case '_':
             case '-':
+                if (kStiffness < -3)
+                {
+                    std::cout << "min force 입니다" << '\n';
+                    break;
+                }
                 kStiffness -= 0.1;
                 break;
             case '=':
             case '+':
+                if (kStiffness > 3)
+                {
+                    std::cout << "max force 입니다" << '\n';
+                    break;
+                }
                 kStiffness += 0.1;
                 break;
             }
             once = true;
+        }
+    }
+
+    void exitHandler()
+    {
+        hdStopScheduler();
+        hdUnschedule(hUpdateDeviceCallback);
+
+        if (ghHD != HD_INVALID_HANDLE)
+        {
+            hdDisableDevice(ghHD);
+            ghHD = HD_INVALID_HANDLE;
         }
     }
 }
@@ -121,7 +147,7 @@ HDCallbackCode HDCALLBACK DeviceStateCallback(void* data)
     /* Send the force to the device. */
     hdSetDoublev(HD_CURRENT_FORCE, force);
 
-    if (once) std::cout << kStiffness << "N 크기의 force 생성";
+    if (once) std::cout << kStiffness << "N 크기의 force 생성" << '\n';
     once = false;
 
 
