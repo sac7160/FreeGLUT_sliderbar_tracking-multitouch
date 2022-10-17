@@ -7,6 +7,9 @@
 #include <HDU/hduVector.h>
 
 #include <iostream>
+#include <fstream>
+#include <string>
+
 
 
 
@@ -15,6 +18,7 @@ namespace PHANTOM_TOOLS
 	void adjust_force();
 	void initHD();
 	void exitHandler();
+	void printOutput(double);
 }
 
 HDCallbackCode HDCALLBACK DeviceStateCallback(void* data);

@@ -92,7 +92,6 @@ perception_exp::perception_exp()
 {
     cnt = 0;
     tmp = 0;
-    //¿ø·¡ main 
     memset(cursors, 0, sizeof(cursors));
 };
 

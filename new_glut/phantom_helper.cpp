@@ -96,6 +96,17 @@ namespace PHANTOM_TOOLS
             ghHD = HD_INVALID_HANDLE;
         }
     }
+
+    void printOutput(double force)
+    {
+        std::ofstream writeFile("test.txt",std::ios::app);
+        //writeFile.open("test.txt");
+
+        std::string str = std::to_string(force);
+        str += "\n";
+        writeFile.write(str.c_str(), str.size());
+        writeFile.close();
+    }
 }
 
 
@@ -147,8 +158,12 @@ HDCallbackCode HDCALLBACK DeviceStateCallback(void* data)
     /* Send the force to the device. */
     hdSetDoublev(HD_CURRENT_FORCE, force);
 
-    if (once) std::cout << kStiffness << "N 农扁狼 force 积己" << '\n';
-    once = false;
+    if (once)
+    {
+        std::cout << kStiffness << "N 农扁狼 force 积己" << '\n';
+        once = false;
+        PHANTOM_TOOLS::printOutput(kStiffness);
+    }
 
 
     /* End haptics frame. */
