@@ -1,4 +1,4 @@
-# FreeGLUT_sliderbar_tracking-multitouch   
+# FreeGLUT_sliderbar_tracking-multitouch + OpenHaptics Touch haptic effects   
    
 ***   
 
@@ -13,17 +13,21 @@ The main function is divided into three parts.
 2. **tracking two-points-touch input**  and print the coordinates in console window.   
 3. sending the content by using **Serial communication** when mouse pressed or a touch event occurs.        
    
-   
-아직 불필요한 코드,오류 많음..
++ Openhaptcs Touch 관련 기능 추가함
+1. continuously provide force (left,right directions)
+2. adjust strength of force
+
+
+
 
 ***   
 
 ## Slider Bar In FreeGLUT
 
 
-<img width="899" alt="1" src="https://user-images.githubusercontent.com/77865395/184819230-0a46808c-95e3-4cc7-84b3-0b6df6a132ea.PNG">
+<img width="895" alt="1" src="https://user-images.githubusercontent.com/77865395/195780693-edb4947a-52ad-49c4-9389-2a5cd15ab3d8.PNG">
 
 
 
 
-<img width="490" alt="2" src="https://user-images.githubusercontent.com/77865395/184819242-9f500b1a-c98c-431d-b4bc-7b9b28ec26e0.PNG">
+<img width="489" alt="2" src="https://user-images.githubusercontent.com/77865395/195780732-e6b5a6f7-80b7-46a7-ac1e-a1fd034ee0b6.PNG">
