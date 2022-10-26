@@ -13,11 +13,17 @@ The main function is divided into three parts.
 2. **tracking two-points-touch input**  and print the coordinates in console window.   
 3. sending the content by using **Serial communication** when mouse pressed or a touch event occurs.        
    
+   
+   
 + Openhaptcs Touch 관련 기능 추가함
 1. continuously provide force (left,right directions)
 2. adjust strength of force
 
 
+
++ txt output file 생성 기능 추가
+1. generate output file on every run
+2. record everytime you adjust the force
 
 
 ***   
@@ -30,4 +36,13 @@ The main function is divided into three parts.
 
 
 
+## console
+
 <img width="489" alt="2" src="https://user-images.githubusercontent.com/77865395/195780732-e6b5a6f7-80b7-46a7-ac1e-a1fd034ee0b6.PNG">
+
+
+
+
+## output file
+
+![image](https://user-images.githubusercontent.com/77865395/197945304-d53fbc72-c172-44aa-baa4-cd20597d6b7d.png)
