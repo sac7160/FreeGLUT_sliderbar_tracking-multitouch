@@ -4,6 +4,8 @@
 
 #include "SerialClass.h"
 
+#include "conio.h"
+
 Serial* SP = new Serial("\\\\.\\COM3");
 int dataLength = 255;
 
@@ -88,6 +90,63 @@ Square* sqr = new Square;
 
 /******************************************************************/
 
+/*********************************************************************/
+// 안내 문구 랜더링
+
+static GLfloat planePos[] = { 0.1, 0.5,0 };
+bool first = true;
+
+void drawString(const char* string)
+{
+    for (; *string != '\0'; ++string)
+    {
+        glutStrokeCharacter(GLUT_STROKE_ROMAN, *string);
+    }
+}
+
+void waitKeyboard()
+{
+    while (!_kbhit());
+    int key = toupper(_getch());
+    if (key == 's' || key== 'S') first = false;
+}
+
+void drawHapticsString()
+{
+    static GLuint displayList = 0;
+
+    if (displayList)
+    {
+        glCallList(displayList);
+    }
+    else
+    {
+        displayList = glGenLists(1);
+        glNewList(displayList, GL_COMPILE_AND_EXECUTE);
+        glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
+        glDisable(GL_LIGHTING);
+        glColor3f(0.0, 0.0, 0.0);
+        glLineWidth(4.0);
+        glPushMatrix();
+        glScalef(0.0003, 0.0003, 0.0003);
+        drawString("If you ready, press 's'");
+        glPopMatrix();
+        glPopAttrib();
+        glEndList();
+    }
+}
+
+void drawSceneGrapics()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glPushMatrix();
+    glTranslatef(planePos[0], planePos[1], planePos[2]);
+    drawHapticsString();
+    glPopMatrix();
+    glFlush();
+}
+/*********************************************************************/
+
 perception_exp::perception_exp() 
 {
     cnt = 0;
@@ -109,10 +168,20 @@ void perception_exp::init()
     
 }
 
+
+
 void perception_exp::onDisplay()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
+    if (first) {
+        drawSceneGrapics();
+        waitKeyboard();
+        //first = false;
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+    glFlush();
+ 
     glColor3f(0.0, 0.0, 0.0);
     glBegin(GL_POLYGON);
     glVertex3f(0.2, 0.47, 0.0);
@@ -128,9 +197,11 @@ void perception_exp::onDisplay()
     glVertex3f(tmpX, 0.53, 0.0);
     glVertex3f(0.2, 0.53, 0.0);
     glEnd();
+        
+
 
     sqr->draw(sqr);
-
+   
     glFlush();
 }
 
