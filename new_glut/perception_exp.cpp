@@ -6,6 +6,7 @@
 
 #include "conio.h"
 
+
 Serial* SP = new Serial("\\\\.\\COM3");
 int dataLength = 255;
 
@@ -163,15 +164,15 @@ void perception_exp::init()
 
 void perception_exp::MyKeyboard(unsigned char KeyPressed, int x, int y)
 {
-                int key = toupper(KeyPressed);
+    int key = toupper(KeyPressed);
 
-                switch (key)
-                {
-                case 's':
-                case 'S':
-                    first = false;
-                }
-        
+    switch (key)
+    {
+        case 's':
+        case 'S':
+            first = false;
+    }
+    PHANTOM_TOOLS::adjust_force(KeyPressed); 
 }
 
 

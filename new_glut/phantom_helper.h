@@ -12,10 +12,9 @@
 
 
 
-
 namespace PHANTOM_TOOLS 
 {
-	void adjust_force();
+	void adjust_force(unsigned char);
 	void initHD();
 	void exitHandler();
 	void printOutput(double);

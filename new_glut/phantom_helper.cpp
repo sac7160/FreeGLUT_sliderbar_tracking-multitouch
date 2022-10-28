@@ -53,7 +53,7 @@ namespace PHANTOM_TOOLS
         hdStartScheduler();
 
     }
-
+    /*
     void adjust_force()
     {
         if (_kbhit())
@@ -83,6 +83,33 @@ namespace PHANTOM_TOOLS
             }
             once = true;
         }
+    }*/
+    void adjust_force(unsigned char KeyPressed)
+    {
+        int key = toupper(KeyPressed);
+
+        switch (key)
+        {
+        case '_':
+        case '-':
+            if (kStiffness < -3)
+            {
+                std::cout << "min force 입니다" << '\n';
+                break;
+            }
+            kStiffness -= 0.1;
+            break;
+        case '=':
+        case '+':
+            if (kStiffness > 3)
+            {
+                std::cout << "max force 입니다" << '\n';
+                break;
+            }
+            kStiffness += 0.1;
+            break;
+        }
+        once = true;
     }
 
     void exitHandler()
@@ -168,9 +195,6 @@ HDCallbackCode HDCALLBACK DeviceStateCallback(void* data)
 
     /* End haptics frame. */
     hdEndFrame(hHD);
-
-
-    PHANTOM_TOOLS::adjust_force();
 
 
     /* Check for errors and abort the callback if a scheduler error
