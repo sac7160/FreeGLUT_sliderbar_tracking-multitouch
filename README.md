@@ -27,9 +27,13 @@ The main function is divided into three parts.
 
 
 ***   
+## start window
+
+![image](https://user-images.githubusercontent.com/77865395/198549391-55532dcf-8712-4839-b4c2-e6b19fed4fb2.png)
+
+
 
 ## Slider Bar In FreeGLUT
-
 
 <img width="895" alt="1" src="https://user-images.githubusercontent.com/77865395/195780693-edb4947a-52ad-49c4-9389-2a5cd15ab3d8.PNG">
 
