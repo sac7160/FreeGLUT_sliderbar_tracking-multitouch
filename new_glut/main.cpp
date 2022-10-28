@@ -6,6 +6,7 @@ void initialize();
 void onDisplay();
 void MyMouseClick(GLint, GLint, GLint, GLint);
 void MyMultiMotion(int, int, int);
+void MyKeyboard(unsigned char, int, int);
 
 
 perception_exp myExp;
@@ -33,6 +34,7 @@ int main(int argc, char* argv[]) {
     }
 
     initialize();
+    glutKeyboardFunc(MyKeyboard);
     glutDisplayFunc(onDisplay);
     glutMouseFunc(MyMouseClick);
     glutMultiMotionFunc(MyMultiMotion);
@@ -48,6 +50,11 @@ int main(int argc, char* argv[]) {
 void initialize()
 {
     myExp.init();
+}
+
+void MyKeyboard(unsigned char KeyPressed, int x, int y)
+{
+    myExp.MyKeyboard(KeyPressed,x,y);
 }
 
 void onDisplay()

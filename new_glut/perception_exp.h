@@ -18,6 +18,7 @@ public:
 	void onDisplay();
 	void mouseClick(GLint, GLint, GLint, GLint);
 	void onMultiMotion(int, int, int);
+	void MyKeyboard(unsigned char, int, int);
 };
 
 

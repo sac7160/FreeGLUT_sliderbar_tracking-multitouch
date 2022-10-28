@@ -24,7 +24,7 @@ float gMagnitude = 1.0f;
 
 
 bool once = true;
-HDdouble kStiffness = 0.5; /* N/mm 이 변수로 N 조절*/
+HDdouble kStiffness = 0.0; /* N/mm 이 변수로 N 조절*/
 
 namespace PHANTOM_TOOLS
 {

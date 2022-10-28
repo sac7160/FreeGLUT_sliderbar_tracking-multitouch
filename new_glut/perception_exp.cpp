@@ -104,13 +104,6 @@ void drawString(const char* string)
     }
 }
 
-void waitKeyboard()
-{
-    while (!_kbhit());
-    int key = toupper(_getch());
-    if (key == 's' || key== 'S') first = false;
-}
-
 void drawHapticsString()
 {
     static GLuint displayList = 0;
@@ -168,41 +161,58 @@ void perception_exp::init()
     
 }
 
+void perception_exp::MyKeyboard(unsigned char KeyPressed, int x, int y)
+{
+                int key = toupper(KeyPressed);
+
+                switch (key)
+                {
+                case 's':
+                case 'S':
+                    first = false;
+                }
+        
+}
 
 
 void perception_exp::onDisplay()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    
+    glFlush();
 
     if (first) {
         drawSceneGrapics();
-        waitKeyboard();
-        //first = false;
-        glClear(GL_COLOR_BUFFER_BIT);
+        glutPostRedisplay();
+        //glClear(GL_COLOR_BUFFER_BIT);
     }
-    glFlush();
- 
-    glColor3f(0.0, 0.0, 0.0);
-    glBegin(GL_POLYGON);
-    glVertex3f(0.2, 0.47, 0.0);
-    glVertex3f(0.8, 0.47, 0.0);
-    glVertex3f(0.8, 0.53, 0.0);
-    glVertex3f(0.2, 0.53, 0.0);
-    glEnd();
+    else
+    {
+        glutPostRedisplay();
+        glClear(GL_COLOR_BUFFER_BIT);
+        glFlush();
 
-    glColor3f(0, 0.74902, 1);
-    glBegin(GL_POLYGON);
-    glVertex3f(0.2, 0.47, 0.0);
-    glVertex3f(tmpX, 0.47, 0.0);
-    glVertex3f(tmpX, 0.53, 0.0);
-    glVertex3f(0.2, 0.53, 0.0);
-    glEnd();
-        
+        glColor3f(0.0, 0.0, 0.0);
+        glBegin(GL_POLYGON);
+        glVertex3f(0.2, 0.47, 0.0);
+        glVertex3f(0.8, 0.47, 0.0);
+        glVertex3f(0.8, 0.53, 0.0);
+        glVertex3f(0.2, 0.53, 0.0);
+        glEnd();
+
+        glColor3f(0, 0.74902, 1);
+        glBegin(GL_POLYGON);
+        glVertex3f(0.2, 0.47, 0.0);
+        glVertex3f(tmpX, 0.47, 0.0);
+        glVertex3f(tmpX, 0.53, 0.0);
+        glVertex3f(0.2, 0.53, 0.0);
+        glEnd();
 
 
-    sqr->draw(sqr);
-   
-    glFlush();
+
+        sqr->draw(sqr);
+
+        glFlush();
+    }
 }
 
 void perception_exp::mouseClick(GLint Button, GLint State, GLint X, GLint Y)
