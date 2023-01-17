@@ -15,7 +15,7 @@ The main function is divided into three parts.
    
    
    
-+ Openhaptcs Touch 관련 기능 추가함
++ Openhaptics Touch 관련 기능 추가함
 1. continuously provide force (left,right directions)
 2. adjust strength of force
 
