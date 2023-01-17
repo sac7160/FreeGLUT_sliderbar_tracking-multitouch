@@ -29,7 +29,7 @@ The main function is divided into three parts.
 ***   
 ## start window
 
-![image](https://user-images.githubusercontent.com/77865395/198549391-55532dcf-8712-4839-b4c2-e6b19fed4fb2.png)
+![image](https://user-images.githubusercontent.com/77865395/212803404-c53c0d68-9df3-40e6-97f1-e3be6d052529.png)
 
 
 
